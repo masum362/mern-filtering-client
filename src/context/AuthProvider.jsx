@@ -2,12 +2,14 @@
 import { createContext, useEffect, useState } from "react"
 import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "../firebase/firebase.init"
+import useAxiosPublic from "../hooks/useAxiosPublic"
 
 
 export const AuthContext = createContext()
 const AuthProvider = ({children}) => {
     const [user, setUser] = useState()
     const [loading, setLoading] = useState(true)
+    const axiosPublic = useAxiosPublic();
 
     const logOut = () => {
       setUser(null)
@@ -26,16 +28,9 @@ const AuthProvider = ({children}) => {
             setLoading(false)
           }
   
-          const data = await baseUrl.post('/role', {email: currentUser.email})
-          const role = await data.data.role
-          setUser({
-            name: currentUser?.displayName,
-            email: currentUser?.email,
-            uid: currentUser?.uid,
-            photoUrl: currentUser?.photoURL,
-            role : role || 'user'
-          })
+          const data = await axiosPublic.post('/login', {email: currentUser.email})
           
+          setUser(data.user)
           setLoading(false)
         } catch (error) {
           console.log(error)
