@@ -4,8 +4,8 @@ export const axiosCommon = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 })
 
-const useAuthSecure = () => {
+const useAxiosPublic = () => {
   return axiosCommon;
 }
 
-export default useAuthSecure
+export default useAxiosPublic
