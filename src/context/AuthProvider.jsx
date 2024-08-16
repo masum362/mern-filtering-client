@@ -1,54 +1,84 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState } from "react"
-import { onAuthStateChanged, signOut } from "firebase/auth"
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth"
 import { auth } from "../firebase/firebase.init"
 import useAxiosPublic from "../hooks/useAxiosPublic"
 
 
 export const AuthContext = createContext()
-const AuthProvider = ({children}) => {
-    const [user, setUser] = useState()
-    const [loading, setLoading] = useState(true)
-    const axiosPublic = useAxiosPublic();
+const AuthProvider = ({ children }) => {
 
-    const logOut = () => {
-      setUser(null)
-      setLoading(true)
-      localStorage.removeItem('token')
-      return signOut(auth)
-    }
+  const gogleProvider = new GoogleAuthProvider();
 
-    useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, async currentUser => {
-        setLoading(true)
+  const [user, setUser] = useState()
+  const [loading, setLoading] = useState(true)
+  const axiosPublic = useAxiosPublic();
 
-        try {
-          if(!currentUser ){
-            localStorage.removeItem('token')
-            setLoading(false)
-          }
-  
-          const data = await axiosPublic.post('/login', {email: currentUser.email})
-          
-          setUser(data.user)
-          setLoading(false)
-        } catch (error) {
-          console.log(error)
+
+  const RegisterUser = (email, password) => {
+    return createUserWithEmailAndPassword(auth, email, password)
+  }
+
+  const LoginUser = (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password)
+  }
+
+  const loginWithGogle = () => {
+    return signInWithPopup(auth, gogleProvider)
+  }
+
+
+
+  const logOut = () => {
+    setUser(null)
+    setLoading(true)
+    localStorage.removeItem('token')
+    return signOut(auth)
+  }
+
+
+
+  useEffect(() => {
+
+    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const userInfo = { userId: currentUser.uid };
+        const user = {
+          displayName: currentUser.displayName,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL,
+          uid: currentUser.uid
         }
-      })
-
-      return () => {
-        return unsubscribe()
+        await axiosPublic.post("/register", user);
+        axiosPublic.post('/login', userInfo)
+          .then(res => {
+            if (res.data.token) {
+              localStorage.setItem('access-token', res.data.token);
+              setUser(res.data.user);
+              setLoading(false);
+            }
+          })
+      } else {
+        setLoading(false)
+        localStorage.removeItem('access-token');
+        console.log("user not found")
+        setUser(null)
       }
-    },[])
-
-    const authInfo = {
-        user,
-        setUser,
-        loading,
-        setLoading,
-        logOut
+    })
+    return () => {
+      unSubscribe();
     }
+  }, [])
+  const authInfo = {
+    user,
+    setUser,
+    loading,
+    setLoading,
+    RegisterUser,
+    LoginUser,
+    loginWithGogle,
+    logOut
+  }
   return (
     <AuthContext.Provider value={authInfo}>
       {children}
