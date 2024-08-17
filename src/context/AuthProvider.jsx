@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState } from "react"
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth"
+import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth"
 import { auth } from "../firebase/firebase.init"
 import useAxiosPublic from "../hooks/useAxiosPublic"
 
@@ -27,12 +27,18 @@ const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, gogleProvider)
   }
 
+  const updateUser = (user, displayName, photoURL) => {
+    setLoading(true)
+    return updateProfile(user, {
+      displayName, photoURL
+    })
+  }
 
 
   const logOut = () => {
     setUser(null)
     setLoading(true)
-    localStorage.removeItem('token')
+    localStorage.removeItem('access_token')
     return signOut(auth)
   }
 
@@ -41,8 +47,9 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
 
     const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      console.log(currentUser)
       if (currentUser) {
-        const userInfo = { userId: currentUser.uid };
+        const userInfo = { email: currentUser.email };
         const user = {
           displayName: currentUser.displayName,
           email: currentUser.email,
@@ -50,11 +57,13 @@ const AuthProvider = ({ children }) => {
           uid: currentUser.uid
         }
         await axiosPublic.post("/register", user);
-        axiosPublic.post('/login', userInfo)
+        await axiosPublic.post('/login', userInfo)
           .then(res => {
             if (res.data.token) {
+              console.log(res.data.user)
               localStorage.setItem('access-token', res.data.token);
               setUser(res.data.user);
+              
               setLoading(false);
             }
           })
@@ -76,6 +85,7 @@ const AuthProvider = ({ children }) => {
     setLoading,
     RegisterUser,
     LoginUser,
+    updateUser,
     loginWithGogle,
     logOut
   }

@@ -16,8 +16,10 @@ const Register = () => {
     const authPublic = useAuthPublic();
 
     const handleOnSubmit = ({ email, password, photoURL, name }) => {
+        console.log(email, password, photoURL, name)
         RegisterUser(email, password).then(result => {
-            updateUser(result.user, name, photoURL,).then(async (res) => {
+            console.log('into the registration result',result.user,name,photoURL)
+            updateUser(result.user, name, photoURL,).then(async(res) => {
                 const user = {
                     displayName: name,
                     email,
@@ -42,7 +44,7 @@ const Register = () => {
                     navigate("/");
                 }, 2000);
             }).catch(err => console.log(err.message));
-        })
+        }).catch(err => console.log(err.message));
     }
 
     return (
