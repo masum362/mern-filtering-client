@@ -106,17 +106,25 @@ const Home = () => {
                         setSelectedBrand("")
                     }}>
                         {/* <option disabled >Select Category</option> */}
-<option value="" selected >All Category</option>
+                        <option value="" selected >All Category</option>
                         {categories.map(category => <option key={category} value={category}>{category}</option>)}
                     </select>
 
                     <select className="select select-info w-full max-w-xs" onChange={(e) => setSelectedBrand(e.target.value)}>
-                        <option disabled selected>Select Brand</option>
+                        <option value={""} selected>All Brand</option>
+                        {/* <option value={''}>All Brand</option> */}
 
                         {brands.map(brand => <option key={brand}>{brand}</option>)}
                     </select>
                     <div>
-                        <input type="range" name="price_range" id="price_range" max={2000} onChange={(e) => setPriceRange(e.target.value)} />
+                        <input type="range" min={0} max="2000" className="range " step="25" onChange={(e)=>setPriceRange(e.target.value)}  />
+                        <div className="flex w-full justify-between px-2 text-xs">
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                        </div>
                     </div>
                     <select className="select select-info w-full max-w-xs" onChange={(e) => setSortOrder(e.target.value)}>
                         <option value="low_to_high">Low to High</option>

@@ -18,15 +18,15 @@ const Register = () => {
     const handleOnSubmit = ({ email, password, photoURL, name }) => {
         console.log(email, password, photoURL, name)
         RegisterUser(email, password).then(result => {
-            console.log('into the registration result',result.user,name,photoURL)
-            updateUser(result.user, name, photoURL,).then(async(res) => {
+            console.log('into the registration result', result.user, name, photoURL)
+            updateUser(result.user, name, photoURL,).then(async (res) => {
                 const user = {
                     displayName: name,
                     email,
                     photoURL,
                     uid: result.user.uid
                 }
-                console.log({user})
+                console.log({ user })
                 await authPublic.post("/register", user)
                 console.log('user updated')
                 toast.success('Successfully Registered user', {
@@ -41,6 +41,7 @@ const Register = () => {
                     transition: Bounce,
                 })
                 setTimeout(() => {
+                    window.location.reload();
                     navigate("/");
                 }, 2000);
             }).catch(err => console.log(err.message));
@@ -101,7 +102,7 @@ const Register = () => {
                     </div>
                     {errors.photoURL && <span className='text-red-500'>{errors.photoURL?.message}</span>}
 
-                     <button className='btn bg-blue-500 text-white font-semibold' type='submit'>Register</button>    
+                    <button className='btn bg-blue-500 text-white font-semibold' type='submit'>Register</button>
                 </form>
                 <p className='text-lg'>already have an acoount?<Link to={"/login"} className='text-themePrimary font-semibold'>Login</Link></p>
 
