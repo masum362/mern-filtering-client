@@ -13,22 +13,22 @@ const Home = () => {
     const { user } = useAuth();
     // const [numberOfProducts] = useProducts();
     // const [productCount, setProductCount] = useState(numberOfProducts)
-    const [limit, setLimit] = useState(6)
+    const [limit, setLimit] = useState(10)
     const [skip, setSkip] = useState(0);
     const [currentPage, setCurrentPage] = useState(0)
     const [search, setSearch] = useState("")
     const [selectedCategory, setSelectedCategory] = useState('')
-    const [priceRange, setPriceRange] = useState(null)
-    const [sortOrder , setSortOrder] = useState('')
-    const [brand , setBrand] = useState('')
+    const [priceRange, setPriceRange] = useState('')
+    const [sortOrder, setSortOrder] = useState('')
+    const [selectedBrand, setSelectedBrand] = useState('')
     const authPublic = useAuthPublic();
     const authSecure = useAuthSecure();
 
 
     const { data: numberOfProducts = 0, refetch: refetchProductCount, isError: isProductCountError } = useQuery({
-        queryKey: ["numberOfProducts", skip, search, limit,selectedCategory,priceRange,sortOrder,brand],
+        queryKey: ["numberOfProducts", skip, search, limit, selectedCategory, priceRange, sortOrder, selectedBrand],
         queryFn: async () => {
-            const response = await authPublic(`/number-of-products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${brand}`)
+            const response = await authPublic(`/number-of-products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${selectedBrand}`)
             console.log(response);
             return parseInt(response.data);
         }
@@ -36,10 +36,10 @@ const Home = () => {
 
 
     const { data: products = [], refetch, isError } = useQuery({
-        queryKey: ["all-products", skip, search, limit],
+        queryKey: ["all-products", skip, search, limit, selectedCategory, priceRange, sortOrder, selectedBrand],
         queryFn: async () => {
-            const response = await authPublic(`/products?search=${search}&skip=${skip}&limit=${limit}`);
-            console.log(response.data)
+            const response = await authPublic(`/products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${selectedBrand}`);
+            console.log('products', response.data)
             return response.data;
 
         }
@@ -49,29 +49,25 @@ const Home = () => {
         queryKey: ["category"],
         queryFn: async () => {
             const response = await authPublic(`/categories`);
-            console.log(response.data)
             return response.data;
 
         }
     })
     const { data: brands = [] } = useQuery({
-        queryKey: ["category"],
+        queryKey: ["brand", selectedCategory],
         queryFn: async () => {
-            const response = await authPublic(`/brands`);
-            console.log(response.data)
+            const response = await authPublic(`/brands?category=${selectedCategory}`);
             return response.data;
 
         }
     })
-
-    console.log({categories})
 
     const numberOfPages = Math.ceil(numberOfProducts / limit);
     const pages = [...Array(numberOfPages).keys()]
 
     const handleBtn = (pageNumber) => {
         setCurrentPage(pageNumber);
-        setSkip(pageNumber * 6)
+        setSkip(pageNumber * limit)
 
     }
 
@@ -79,7 +75,7 @@ const Home = () => {
         if (currentPage > 0) {
             const newPage = currentPage - 1;
             setCurrentPage(newPage);
-            setSkip(newPage * 6)
+            setSkip(newPage * limit)
 
 
         }
@@ -88,23 +84,45 @@ const Home = () => {
         if (currentPage < pages.length - 1) {
             const newPage = currentPage + 1;
             setCurrentPage(newPage);
-            setSkip(newPage * 6)
+            setSkip(newPage * limit)
         }
     }
 
 
 
-    console.log(products)
+    console.log({ skip, search, limit, selectedCategory, priceRange, sortOrder, selectedBrand, products, categories, brands })
 
     return (
         <div>
             <div className='lg:m-20 m-4'>
                 <h1 className='text-2xl md:text-5xl font-bold text-center py-4'>All Products</h1>
                 <div className='my-12 flex items-center justify-center'>
-                    <input onChange={(e) => setSearch(e.target.value)} type="text" name="search" id="search" className='input w-full max-w-xl' placeholder='search your product' />
+                    <input onChange={(e) => setSearch(e.target.value)} type="text" name="search" id="search" className='input w-full max-w-xl input-bordered' placeholder='search your product' />
                 </div>
-                <div>
+                <div className='flex items-center gap-4 flex-wrap justify-center'>
 
+                    <select className="select select-info w-full max-w-xs" onChange={(e) => {
+                        setSelectedCategory(e.target.value)
+                        setSelectedBrand("")
+                    }}>
+                        {/* <option disabled >Select Category</option> */}
+<option value="" selected >All Category</option>
+                        {categories.map(category => <option key={category} value={category}>{category}</option>)}
+                    </select>
+
+                    <select className="select select-info w-full max-w-xs" onChange={(e) => setSelectedBrand(e.target.value)}>
+                        <option disabled selected>Select Brand</option>
+
+                        {brands.map(brand => <option key={brand}>{brand}</option>)}
+                    </select>
+                    <div>
+                        <input type="range" name="price_range" id="price_range" max={2000} onChange={(e) => setPriceRange(e.target.value)} />
+                    </div>
+                    <select className="select select-info w-full max-w-xs" onChange={(e) => setSortOrder(e.target.value)}>
+                        <option value="low_to_high">Low to High</option>
+                        <option value="high_to_low">High to Low</option>
+                        <option value="newest_date">Newest First</option>
+                    </select>
                 </div>
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-4' id='products'>
