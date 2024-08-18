@@ -27,7 +27,7 @@ const Navbar = () => {
 
             </ul>
           </div>
-          <Link to={"/"}>The Find</Link>
+          <Link to={"/"} className='font-mono text-4xl uppercase italic'>The Find</Link>
 
         </div>
         <div className=" navbar-center hidden md:flex">

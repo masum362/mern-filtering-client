@@ -13,7 +13,7 @@ const Home = () => {
     const { user } = useAuth();
     // const [numberOfProducts] = useProducts();
     // const [productCount, setProductCount] = useState(numberOfProducts)
-    const [limit, setLimit] = useState(10)
+    const [limit, setLimit] = useState(20)
     const [skip, setSkip] = useState(0);
     const [currentPage, setCurrentPage] = useState(0)
     const [search, setSearch] = useState("")
@@ -117,7 +117,7 @@ const Home = () => {
                         {brands.map(brand => <option key={brand}>{brand}</option>)}
                     </select>
                     <div>
-                        <input type="range" min={0} max="2000" className="range " step="25" onChange={(e)=>setPriceRange(e.target.value)}  />
+                        <input type="range" min={0} max="2000" className="range " step="25" onChange={(e) => setPriceRange(e.target.value)} />
                         <div className="flex w-full justify-between px-2 text-xs">
                             <span>|</span>
                             <span>|</span>
@@ -127,19 +127,26 @@ const Home = () => {
                         </div>
                     </div>
                     <select className="select select-info w-full max-w-xs" onChange={(e) => setSortOrder(e.target.value)}>
+                        <option disabled selected>Sory By</option>
                         <option value="low_to_high">Low to High</option>
                         <option value="high_to_low">High to Low</option>
                         <option value="newest_date">Newest First</option>
                     </select>
                 </div>
 
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-4' id='products'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ' id='products'>
                     {
                         products?.map(product => <div key={product._id} className="card bg-base-100 shadow-xl p-4 my-4">
                             <figure><img src={product.photoURL} alt={product.name} className='w-full h-auto ' /></figure>
-                            <div className="card-body">
-                                <div className='flex items-center justify-between gap-2 w-full my-4'>
-                                    <Link to={`/product/${product._id}`}> <h1 className='font-bold text-lg md:text-3xl cursor-pointer hover:text-themePrimary'>{product.name}</h1></Link>
+                            <div className="">
+                                <div className='flex flex-col items-start justify-start text-start gap-2 w-full my-4'>
+                                    <div className='flex items-center justify-between w-full '>
+                                        <Link> <h1 className='font-bold text-lg md:text-3xl cursor-pointer hover:text-themePrimary'>{product.name}</h1></Link>
+                                        <p className='font-semibold text-themePrimary'>{product?.brand}</p>
+                                    </div>
+                                    <p>{product?.description.slice(0, 100)}</p>
+                                    <h4 className=' text-lg'>{product?.category}</h4>
+                                    <h4 className='text-themePrimary font-bold text-lg'>${product?.price}</h4>
                                 </div>
                             </div>
                         </div>)

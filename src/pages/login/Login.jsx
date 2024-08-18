@@ -34,6 +34,7 @@ const Login = () => {
             })
             reset();
             setTimeout(() => {
+                console.log(location)
                 navigate(location.state ? location.state : "/");
             }, 2000);
         }).catch(err => {

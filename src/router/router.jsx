@@ -3,6 +3,7 @@ import App from "../App";
 import Home from "../pages/home/Home";
 import Login from "../pages/login/Login";
 import Register from "../pages/register/Register";
+import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
     {
@@ -11,13 +12,13 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Home />
+                element: <PrivateRoute><Home /></PrivateRoute>
             },
             {
                 path: "/login",
                 element: <Login />
             },
-             {
+            {
                 path: "/register",
                 element: <Register />
             }
@@ -26,4 +27,4 @@ const router = createBrowserRouter([
 ])
 
 
-export {router};
+export { router };
