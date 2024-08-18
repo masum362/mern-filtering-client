@@ -9,23 +9,32 @@ export const axiosSecure = axios.create({
   withCredentials: true,
 })
 const useAxiosSecure = () => {
-  const { logOut } = useAuth()
-  const navigate = useNavigate()
-  useEffect(() => {
+  // const { logOut } = useAuth()
+  // const navigate = useNavigate()
+  
+
+    axiosSecure.interceptors.request.use(config => {
+      const token = localStorage.getItem('access-token')
+      // console.log('request stopped by interceptors', token)
+      config.headers.authorization = `Bearer ${token}`;
+      return config;
+    }, err => {
+      return Promise.reject(err);
+    })
+
     axiosSecure.interceptors.response.use(
       res => {
         return res
       },
       async error => {
         console.log('error tracked in the interceptor', error.response)
-        if (error.response.status === 401 || error.response.status === 403) {
-          // await logOut()
-          // navigate('/login')
-        }
+        // if (error.response.status === 401 || error.response.status === 403) {
+        //   // await logOut()
+        //   // navigate('/login')
+        // }
         return Promise.reject(error)
       }
     )
-  }, [logOut, navigate])
 
   return axiosSecure
 }

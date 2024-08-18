@@ -28,7 +28,7 @@ const Home = () => {
     const { data: numberOfProducts = 0, refetch: refetchProductCount, isError: isProductCountError } = useQuery({
         queryKey: ["numberOfProducts", skip, search, limit, selectedCategory, priceRange, sortOrder, selectedBrand],
         queryFn: async () => {
-            const response = await authPublic(`/number-of-products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${selectedBrand}`)
+            const response = await authSecure.get(`/number-of-products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${selectedBrand}`)
             console.log(response);
             return parseInt(response.data);
         }
@@ -38,7 +38,7 @@ const Home = () => {
     const { data: products = [], refetch, isError } = useQuery({
         queryKey: ["all-products", skip, search, limit, selectedCategory, priceRange, sortOrder, selectedBrand],
         queryFn: async () => {
-            const response = await authPublic(`/products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${selectedBrand}`);
+            const response = await authSecure.get(`/products?search=${search}&skip=${skip}&limit=${limit}&category=${selectedCategory}&price_range=${priceRange}&sort_order=${sortOrder}&brand=${selectedBrand}`);
             console.log('products', response.data)
             return response.data;
 
@@ -48,7 +48,7 @@ const Home = () => {
     const { data: categories = [] } = useQuery({
         queryKey: ["category"],
         queryFn: async () => {
-            const response = await authPublic(`/categories`);
+            const response = await authSecure.get(`/categories`);
             return response.data;
 
         }
@@ -56,7 +56,7 @@ const Home = () => {
     const { data: brands = [] } = useQuery({
         queryKey: ["brand", selectedCategory],
         queryFn: async () => {
-            const response = await authPublic(`/brands?category=${selectedCategory}`);
+            const response = await authSecure.get(`/brands?category=${selectedCategory}`);
             return response.data;
 
         }
