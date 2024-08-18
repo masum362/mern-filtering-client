@@ -41,8 +41,8 @@ const Register = () => {
                     transition: Bounce,
                 })
                 setTimeout(() => {
-                    window.location.reload();
                     navigate("/");
+                    window.location.reload();
                 }, 2000);
             }).catch(err => console.log(err.message));
         }).catch(err => console.log(err.message));
