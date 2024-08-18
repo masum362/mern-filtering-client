@@ -99,7 +99,7 @@ const Home = () => {
                 <div className='my-12 flex items-center justify-center'>
                     <input onChange={(e) => setSearch(e.target.value)} type="text" name="search" id="search" className='input w-full max-w-xl input-bordered' placeholder='search your product' />
                 </div>
-                <div className='flex items-center gap-4 flex-wrap justify-center'>
+                <div className='flex flex-col sm:flex-row items-center gap-4 flex-wrap justify-center'>
 
                     <select className="select select-info w-full max-w-xs" onChange={(e) => {
                         setSelectedCategory(e.target.value)
